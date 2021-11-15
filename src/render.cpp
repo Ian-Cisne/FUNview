@@ -97,9 +97,34 @@ Render::Render(Config* config): configuracion(config) {
     glDeleteShader(vertShader);
     glDeleteShader(fragShader);
 
-    glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &this->VBO);
-    glGenBuffers(1, &this->EBO);
+    float vertices_lines[4] = {
+        1.0,  2.0,
+        3.0,  4.0
+    };
+    uint vertices_lines_indice[4] = {
+        0, 1,
+        2, 3
+    };
+
+    glGenVertexArrays(1, &lVAO);
+    glGenBuffers(1, &lVBO);
+    glGenBuffers(1, &lEBO);
+
+    glBindVertexArray(lVAO);
+
+    
+    glBindBuffer(GL_ARRAY_BUFFER, lVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_lines), vertices_lines, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, lEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices_lines_indice), vertices_lines_indice, GL_STATIC_DRAW); 
+
+    glVertexAttribPointer(0, 1, GL_FLOAT, GL_FALSE, sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO);
 
@@ -111,7 +136,7 @@ Render::Render(Config* config): configuracion(config) {
     float *__vertices = &_vertices[0];
     uint *__indices = &_indices[0];
 
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, _vertices.size()*sizeof(float), __vertices, GL_STATIC_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -128,9 +153,6 @@ Render::Render(Config* config): configuracion(config) {
 
 void Render::mainLoop(){
 
-    configuracion->coeficientes[0] = 2;
-    configuracion->coeficientes[1] = 3;
-    configuracion->coeficientes[2] = 6;
 
     std::cout << "Coeficientes:\n";
 
@@ -160,11 +182,20 @@ void Render::mainLoop(){
         glUniform1fv(u_coeficientes, MAX_GRADO, &configuracion->coeficientes[0]);
 
         int u_grado = glGetUniformLocation(shaderProgram, "u_Grado");
-        glUniform1ui(u_grado, int(configuracion->grado));
+        glUniform1ui(u_grado, configuracion->grado);
+
+        int u_guias = glGetUniformLocation(shaderProgram, "u_Guias");
+        glUniform1i(u_guias, false);
 
         glBindVertexArray(VAO);
-        glDrawElements(GL_LINES, configuracion->anchoPantalla, GL_UNSIGNED_INT,0);
+        glDrawElements(GL_LINES, configuracion->anchoPantalla, GL_UNSIGNED_INT,0);  
  
+        glUniform1i(u_guias, true);
+        glUniform3f(u_color, 0.0f, 0.0f, 0.0f);
+
+        glBindVertexArray(lVAO);
+        glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT,0);  
+
         Ventana->actualizeState();
     }
 

@@ -47,10 +47,10 @@ Config* Config::getInstance(const int argc, const char **argv){
 }
 
 Config::Config(const int argc, const char **argv):
-    anchoPantalla(1000),
-    altoPantalla(500),
+    anchoPantalla(800),
+    altoPantalla(600),
     zoom(1.0),
-    grado(2),
+    grado(1),
     cerrar(false)
 {
     std::vector<bool> opcionesUsadas(5, false);

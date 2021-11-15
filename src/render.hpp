@@ -15,7 +15,7 @@ class Render{
     Config* configuracion;
     Window* Ventana;
     uint shaderProgram;
-    uint VBO, VAO, EBO;
+    uint VBO, VAO, EBO, lVBO, lVAO, lEBO;
     Render(Config*);
     
 public:
